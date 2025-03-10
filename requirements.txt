@@ -1,0 +1,7 @@
+numpy
+scipy
+matplotlib
+numba
+pandas
+imageio[ffmpeg]
+notebook
