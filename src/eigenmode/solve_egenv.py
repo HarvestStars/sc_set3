@@ -4,6 +4,7 @@ import scipy.linalg as la
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Used for statistical analysis for different methods
 def solve_eigenproblem(M, method="eigs", num_eigenvalues=6):
     """
     Compute the eigenvalues and eigenvectors of matrix M.
@@ -61,7 +62,7 @@ def plot_eigenmodes(M, reshape_x, reshape_y, num_modes=3):
 
         ax = axes[i]
         im = ax.imshow(eigenvector, cmap='coolwarm', origin='lower', aspect='auto')
-        ax.set_title(f"Eigenmode {i+1}\nλ={w[i]:.4f}")
+        ax.set_title(f"Eigenmode {i+1}\nK={w[i]:.4f}") # λ**2 = -K
         ax.set_xlabel("X-axis")
         ax.set_ylabel("Y-axis")
         fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
@@ -101,7 +102,7 @@ def solve_eigenproblem_circle_v1(M, index_map, N, num_modes=3):
         # plot the eigenvector
         ax = axes[i]
         im = ax.imshow(eigenvector, cmap='coolwarm', origin='lower', aspect='auto')
-        ax.set_title(f"Eigenmode {i+1}\nλ={w[i]:.4f}")
+        ax.set_title(f"Eigenmode {i+1}\nK={w[i]:.4f}")
         ax.set_xlabel("X-axis")
         ax.set_ylabel("Y-axis")
         fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
@@ -140,7 +141,7 @@ def solve_eigenproblem_circle_v2(M, mask, N, num_modes=3):
 
         ax = axes[i]
         im = ax.imshow(eigenvector, cmap='coolwarm', origin='lower', aspect='auto')
-        ax.set_title(f"Eigenmode {i+1}\nλ={w[i]:.4f}")
+        ax.set_title(f"Eigenmode {i+1}\nK={w[i]:.4f}")
         ax.set_xlabel("X-axis")
         ax.set_ylabel("Y-axis")
         fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
@@ -156,15 +157,15 @@ if __name__ == "__main__":
 
     # Square domain
     M_rectangle = gen_M.generate_M_with_square(N, h)  # Generate M matrix
-    plot_eigenmodes(M_rectangle, N, N, num_modes=3)  # Plot the first three eig
+    plot_eigenmodes(M_rectangle, N, N, num_modes=4)  # Plot the first three eig
 
     # Rectangular domain
     M_rectangle = gen_M.generate_M_with_rectangle(N, h)  # Generate M for the rectangular domain
-    plot_eigenmodes(M_rectangle, 2*N, N, num_modes=3)  # Plot the first three eigenvector heatmaps
+    plot_eigenmodes(M_rectangle, 2*N, N, num_modes=4)  # Plot the first three eigenvector heatmaps
 
     # Circular domain
     M_circle, index_map, valid_points = gen_M.generate_M_with_circle_v1(N, h) 
-    solve_eigenproblem_circle_v1(M_circle, index_map, N, num_modes=3)
+    solve_eigenproblem_circle_v1(M_circle, index_map, N, num_modes=4)
 
     # M_circle, mask = gen_M.generate_M_with_circle_v2(N)
     # solve_eigenproblem_circle_v2(M_circle, mask, N, num_modes=3)
