@@ -152,18 +152,19 @@ def solve_eigenproblem_circle_v2(M, mask, N, num_modes=3):
 if __name__ == "__main__":
     # example usage
     N = 100  # Grid size for the circle
+    h = 1/N  # Grid spacing
 
     # Square domain
-    M_rectangle = gen_M.generate_M_with_square(N)  # Generate M matrix
+    M_rectangle = gen_M.generate_M_with_square(N, h)  # Generate M matrix
     plot_eigenmodes(M_rectangle, N, N, num_modes=3)  # Plot the first three eig
 
     # Rectangular domain
-    M_rectangle = gen_M.generate_M_with_rectangle(N)  # Generate M for the rectangular domain
+    M_rectangle = gen_M.generate_M_with_rectangle(N, h)  # Generate M for the rectangular domain
     plot_eigenmodes(M_rectangle, 2*N, N, num_modes=3)  # Plot the first three eigenvector heatmaps
 
     # Circular domain
-    M_circle, index_map, valid_points = gen_M.generate_M_with_circle_v1(N) 
+    M_circle, index_map, valid_points = gen_M.generate_M_with_circle_v1(N, h) 
     solve_eigenproblem_circle_v1(M_circle, index_map, N, num_modes=3)
 
-    M_circle, mask = gen_M.generate_M_with_circle_v2(N)
-    solve_eigenproblem_circle_v2(M_circle, mask, N, num_modes=3)
+    # M_circle, mask = gen_M.generate_M_with_circle_v2(N)
+    # solve_eigenproblem_circle_v2(M_circle, mask, N, num_modes=3)

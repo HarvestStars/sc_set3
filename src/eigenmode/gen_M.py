@@ -7,14 +7,15 @@ import scipy.sparse as sp
 # N = 3
 # N^2 x N^2 grid, here is 9 x 9 grid
 
-def generate_M_with_square(N):
+def generate_M_with_square(N, h=1.0):
     """
     Generate the discretized Laplacian matrix M for a square computational domain
     with Dirichlet boundary conditions (boundary values set to zero).
     
     Parameters:
         N (int): Number of interior grid points in one dimension (excluding boundary points).
-    
+        h (float): Grid spacing
+
     Returns:
         scipy.sparse.csr_matrix: Sparse matrix M of shape (N^2, N^2) representing the Laplacian operator.
     """
@@ -22,9 +23,9 @@ def generate_M_with_square(N):
     num_points = N * N
     
     # Create sparse matrix with five-point stencil
-    main_diag = -4 * np.ones(num_points)  # Center coefficient (-4)
-    side_diag = np.ones(num_points - 1)   # Left and right neighbors (+1)
-    up_down_diag = np.ones(num_points - N) # Up and down neighbors (+1)
+    main_diag = -4 / h**2 * np.ones(num_points)  # Center coefficient (-4)
+    side_diag = 1/ h**2 * np.ones(num_points - 1)   # Left and right neighbors (+1)
+    up_down_diag = 1/ h**2 * np.ones(num_points - N) # Up and down neighbors (+1)
 
     # Adjust side diagonals to ensure correctness at boundaries
     for i in range(1, N):
@@ -48,13 +49,14 @@ def generate_M_with_square(N):
 # v6,1 v6,2 v6,3
 # N=3, 2N=6
 # N*2N x N*2N grid
-def generate_M_with_rectangle(N):
+def generate_M_with_rectangle(N, h=1.0):
     """
     Generate the discretized Laplacian matrix M for a rectangular computational domain
     with Dirichlet boundary conditions (boundary values set to zero).
 
     Parameters:
         N (int): Number of interior grid points in one dimension (excluding boundary points).
+        h (float): Grid spacing
 
     Returns:
         scipy.sparse.csr_matrix: Sparse matrix M of shape (N * 2N, N * 2N) representing the Laplacian operator.
@@ -63,17 +65,17 @@ def generate_M_with_rectangle(N):
     num_points = Nx * Ny  # Total number of interior points
 
     # center diag line: coefficient (-4)
-    main_diag = -4 * np.ones(num_points)
+    main_diag = -4 / h**2 * np.ones(num_points)
 
     # left and right neighbors diag line: (+1)
-    side_diag = np.ones(num_points - 1)
+    side_diag = 1/ h**2 * np.ones(num_points - 1)
 
     # disconnect right side of each row
     for i in range(1, Nx):
         side_diag[i * Ny - 1] = 0
 
     # up and down neighbors diag line: (+1)
-    up_down_diag = np.ones(num_points - Ny)
+    up_down_diag = 1 / h**2 * np.ones(num_points - Ny)
 
     # Create sparse matrix using diagonals
     M = sp.diags(
@@ -85,18 +87,19 @@ def generate_M_with_rectangle(N):
 
     return M
 
-def generate_M_with_circle_v1(N):
+def generate_M_with_circle_v1(N, h=1.0):
     """
     Generate a sparse matrix M (N x N) corresponding to the discrete Laplacian matrix for a circular computational domain.
     Uses a 5-point finite difference scheme with Dirichlet boundary conditions (boundary values set to 0).
 
     Parameters:
-    N (int): Grid size of the computational domain (NxN)
+        N (int): Grid size of the computational domain (NxN)
+        h (float): Grid spacing
 
     Returns:
-    scipy.sparse.csr_matrix: Sparse matrix M, with shape (N*N, N*N)
-    index_map (dict): Mapping from 2D coordinates to the corresponding index in the flattened matrix
-    valid_points (numpy.array): 2D coordinates of points inside the circle
+        scipy.sparse.csr_matrix: Sparse matrix M, with shape (N*N, N*N)
+        index_map (dict): Mapping from 2D coordinates to the corresponding index in the flattened matrix
+        valid_points (numpy.array): 2D coordinates of points inside the circle
     """
     R = N // 2  # radius of the circle (assuming diameter = grid size)
 
@@ -119,28 +122,29 @@ def generate_M_with_circle_v1(N):
 
     # fill the matrix
     for idx, (i, j) in enumerate(valid_points):
-        M[idx, idx] = -4  # diagonal element
+        M[idx, idx] = -4 / h**2 # diagonal element
         
         # left, right, up, down
         for di, dj in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
             ni, nj = i + di, j + dj
             if (ni, nj) in index_map:  # if the neighbor is inside the circle
-                M[idx, index_map[(ni, nj)]] = 1
+                M[idx, index_map[(ni, nj)]] = 1 / h**2
 
     return M.tocsr(), index_map, valid_points
 
 
-def generate_M_with_circle_v2(N):
+def generate_M_with_circle_v2(N, h=1.0):
     """
     Generate a sparse matrix M (N x N) corresponding to the discrete Laplacian matrix for a circular computational domain.
     Uses a 5-point finite difference scheme with Dirichlet boundary conditions (boundary values set to 0).
     
     Parameters:
-    N (int): Grid size of the computational domain (NxN)
+        N (int): Grid size of the computational domain (NxN)
+        h (float): Grid spacing
     
     Returns:
-    scipy.sparse.csr_matrix: Sparse matrix M, with shape (N*N, N*N)
-    mask (numpy.array): 1D array marking which points are inside (1) / outside (0) the circle
+        scipy.sparse.csr_matrix: Sparse matrix M, with shape (N*N, N*N)
+        mask (numpy.array): 1D array marking which points are inside (1) / outside (0) the circle
     """
     R = N // 2  # Radius of the circle (assuming diameter = grid size)
     num_points = N * N  # Total number of grid points
@@ -155,9 +159,9 @@ def generate_M_with_circle_v2(N):
     mask_flat = mask.flatten()  # Flatten to 1D
 
     # Construct five-point finite difference matrix
-    main_diag = -4 * np.ones(num_points)
-    side_diag = np.ones(num_points - 1)
-    up_down_diag = np.ones(num_points - N)
+    main_diag = -4 / h**2 * np.ones(num_points)
+    side_diag = 1 / h**2 * np.ones(num_points - 1)
+    up_down_diag = 1 / h**2 * np.ones(num_points - N)
 
     # Handle row boundary conditions (prevent incorrect connections)
     for i in range(1, N):
@@ -175,7 +179,7 @@ def generate_M_with_circle_v2(N):
     for i in range(num_points):
         if not mask_flat[i]:  # If the point is outside the circle
             M[i, :] = 0  # Set the row to zero
-            M[i, i] = 1  # Ensure numerical stability (nonzero diagonal)
+            M[i, i] = 1 / h**2  # Ensure numerical stability (nonzero diagonal)
 
     return M, mask_flat
 
