@@ -2,6 +2,7 @@ import gen_M
 import scipy.sparse.linalg as spla
 import scipy.linalg as la
 import matplotlib.pyplot as plt
+import numpy as np
 
 def solve_eigenproblem(M, method="eigs", num_eigenvalues=6):
     """
@@ -36,7 +37,7 @@ def solve_eigenproblem(M, method="eigs", num_eigenvalues=6):
     else:
         raise ValueError("Invalid method. Choose from 'eig', 'eigh', or 'eigs'.")
 
-def plot_eigenmodes(M, N, num_modes=3):
+def plot_eigenmodes(M, reshape_x, reshape_y, num_modes=3):
     """
     Compute and visualize the heatmaps of eigenvectors corresponding to the smallest eigenvalues of Laplacian matrix M.
     
@@ -56,7 +57,7 @@ def plot_eigenmodes(M, N, num_modes=3):
     fig, axes = plt.subplots(1, num_modes, figsize=(4 * num_modes, 4))
     
     for i in range(num_modes):
-        eigenvector = v[:, i].reshape(2 * N, N)  # Reshape the eigenvector to a 2D grid
+        eigenvector = v[:, i].reshape(reshape_x, reshape_y)  # Reshape the eigenvector to a 2D grid
 
         ax = axes[i]
         im = ax.imshow(eigenvector, cmap='coolwarm', origin='lower', aspect='auto')
@@ -68,17 +69,101 @@ def plot_eigenmodes(M, N, num_modes=3):
     plt.tight_layout()
     plt.show()
 
-# # Example: Solve the eigenproblem for M matrix on a rectangular computational domain
-# N = 5  # Grid size for the rectangle
-# M_rectangle = gen_M.generate_M_with_square(N)  # Generate M matrix
+def solve_eigenproblem_circle_v1(M, index_map, N, num_modes=3):
+    """
+    Compute and visualize the heatmaps of eigenvectors corresponding to the smallest eigenvalues of Laplacian matrix M.
 
-# # Choose an appropriate solution method
-# w, v = solve_eigenproblem(M_rectangle, method="eigs", num_eigenvalues=6)
+    Parameters:
+    M (scipy.sparse matrix): Laplacian matrix
+    index_map (dict): Mapping (i, j) -> index for solving the eigenvalues to map back to the grid
+    N (int): Grid size of the computational domain (NxN)
+    num_modes (int): Number of eigenvectors to plot corresponding to the smallest eigenvalues
 
-# # Print the smallest 6 eigenvalues
-# print("Smallest eigenvalues:", w)
+    Returns:
+    None (directly generates the plots)
 
-# Example usage
-N = 100  # Short side of the computational domain
-M_rectangle = gen_M.generate_M_with_rectangle(N)  # Generate M for the rectangular domain
-plot_eigenmodes(M_rectangle, N, num_modes=3)  # Plot the first three eigenvector heatmaps
+    """
+
+    # calculate the first num_modes smallest eigenvalues and eigenvectors
+    w, v = spla.eigs(M, k=num_modes, which='SM')  # 'SM' -> Smallest Magnitude
+    w, v = w.real, v.real
+
+    # plot the eigenvectors as heatmaps
+    fig, axes = plt.subplots(1, num_modes, figsize=(4 * num_modes, 4))
+    
+    for i in range(num_modes):
+        eigenvector = np.zeros((N, N))  # initialize with zeros
+        
+        # fill the eigenvector with the inside points
+        for (x, y), idx in index_map.items():
+            eigenvector[x, y] = v[idx, i]  # fill the value of the eigenvector
+
+        # plot the eigenvector
+        ax = axes[i]
+        im = ax.imshow(eigenvector, cmap='coolwarm', origin='lower', aspect='auto')
+        ax.set_title(f"Eigenmode {i+1}\nλ={w[i]:.4f}")
+        ax.set_xlabel("X-axis")
+        ax.set_ylabel("Y-axis")
+        fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+    
+    plt.tight_layout()
+    plt.show()
+
+def solve_eigenproblem_circle_v2(M, mask, N, num_modes=3):
+    """
+    Compute and visualize the heatmaps of eigenvectors corresponding to the smallest eigenvalues of Laplacian matrix M.
+    
+    Parameters:
+    M (scipy.sparse matrix): Laplacian matrix
+    mask (numpy.array): 1D array marking which points are inside (1) / outside (0) the circle
+    N (int): Grid size of the computational domain (NxN)
+    num_modes (int): Number of eigenvectors to plot corresponding to the smallest eigenvalues
+    
+    Returns:
+    None (directly generates the plots)
+    """
+    # Compute the first num_modes smallest eigenvalues and eigenvectors
+    w, v = spla.eigs(M, k=num_modes, which='SM')
+    w, v = w.real, v.real  # Extract real parts
+
+    print(v.shape)
+
+    # Generate plots
+    fig, axes = plt.subplots(1, num_modes, figsize=(4 * num_modes, 4))
+    
+    for i in range(num_modes):
+        eigenvector = np.zeros(N * N)  # Initialize with zeros
+        for j in range(N * N):
+            if mask[j]:  # Fill only points inside the circle
+                eigenvector[j] = v[j, i]
+        eigenvector = eigenvector.reshape(N, N)  # Reshape to 2D
+
+        ax = axes[i]
+        im = ax.imshow(eigenvector, cmap='coolwarm', origin='lower', aspect='auto')
+        ax.set_title(f"Eigenmode {i+1}\nλ={w[i]:.4f}")
+        ax.set_xlabel("X-axis")
+        ax.set_ylabel("Y-axis")
+        fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+    
+    plt.tight_layout()
+    plt.show()
+
+
+if __name__ == "__main__":
+    # example usage
+    N = 100  # Grid size for the circle
+
+    # Square domain
+    M_rectangle = gen_M.generate_M_with_square(N)  # Generate M matrix
+    plot_eigenmodes(M_rectangle, N, N, num_modes=3)  # Plot the first three eig
+
+    # Rectangular domain
+    M_rectangle = gen_M.generate_M_with_rectangle(N)  # Generate M for the rectangular domain
+    plot_eigenmodes(M_rectangle, 2*N, N, num_modes=3)  # Plot the first three eigenvector heatmaps
+
+    # Circular domain
+    M_circle, index_map, valid_points = gen_M.generate_M_with_circle_v1(N) 
+    solve_eigenproblem_circle_v1(M_circle, index_map, N, num_modes=3)
+
+    M_circle, mask = gen_M.generate_M_with_circle_v2(N)
+    solve_eigenproblem_circle_v2(M_circle, mask, N, num_modes=3)

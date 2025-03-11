@@ -85,10 +85,112 @@ def generate_M_with_rectangle(N):
 
     return M
 
-# Example usage:
-N = 5  # Example for a 3x3 interior grid (excluding boundary)
-M_square = generate_M_with_square(N - 2) # Generate M for a 3x3 interior grid
-print(M_square.toarray())  # Display the full matrix for small N
+def generate_M_with_circle_v1(N):
+    """
+    Generate a sparse matrix M (N x N) corresponding to the discrete Laplacian matrix for a circular computational domain.
+    Uses a 5-point finite difference scheme with Dirichlet boundary conditions (boundary values set to 0).
 
-M_rectangle = generate_M_with_rectangle(N - 2)
-print(M_rectangle.toarray())
+    Parameters:
+    N (int): Grid size of the computational domain (NxN)
+
+    Returns:
+    scipy.sparse.csr_matrix: Sparse matrix M, with shape (N*N, N*N)
+    index_map (dict): Mapping from 2D coordinates to the corresponding index in the flattened matrix
+    valid_points (numpy.array): 2D coordinates of points inside the circle
+    """
+    R = N // 2  # radius of the circle (assuming diameter = grid size)
+
+    # generate index grid
+    x, y = np.meshgrid(np.arange(N), np.arange(N))
+    x, y = x - R, y - R  # 以中心 (0,0) 对齐
+
+    # generate circular mask
+    mask = (x**2 + y**2 <= R**2)
+
+    # get valid points inside the circle
+    valid_points = np.argwhere(mask) # coordinates of points inside the circle
+    num_valid = len(valid_points)  # number of valid points
+
+    # create index map
+    index_map = {tuple(pt): idx for idx, pt in enumerate(valid_points)}
+
+    # create sparse matrix M
+    M = sp.lil_matrix((num_valid, num_valid))
+
+    # fill the matrix
+    for idx, (i, j) in enumerate(valid_points):
+        M[idx, idx] = -4  # diagonal element
+        
+        # left, right, up, down
+        for di, dj in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            ni, nj = i + di, j + dj
+            if (ni, nj) in index_map:  # if the neighbor is inside the circle
+                M[idx, index_map[(ni, nj)]] = 1
+
+    return M.tocsr(), index_map, valid_points
+
+
+def generate_M_with_circle_v2(N):
+    """
+    Generate a sparse matrix M (N x N) corresponding to the discrete Laplacian matrix for a circular computational domain.
+    Uses a 5-point finite difference scheme with Dirichlet boundary conditions (boundary values set to 0).
+    
+    Parameters:
+    N (int): Grid size of the computational domain (NxN)
+    
+    Returns:
+    scipy.sparse.csr_matrix: Sparse matrix M, with shape (N*N, N*N)
+    mask (numpy.array): 1D array marking which points are inside (1) / outside (0) the circle
+    """
+    R = N // 2  # Radius of the circle (assuming diameter = grid size)
+    num_points = N * N  # Total number of grid points
+    
+    # Create index grid
+    x, y = np.meshgrid(np.arange(N), np.arange(N))
+    x = x - R  # Center at (0,0)
+    y = y - R
+
+    # Create circular mask (1 = inside the circle, 0 = outside)
+    mask = (x**2 + y**2) <= R**2
+    mask_flat = mask.flatten()  # Flatten to 1D
+
+    # Construct five-point finite difference matrix
+    main_diag = -4 * np.ones(num_points)
+    side_diag = np.ones(num_points - 1)
+    up_down_diag = np.ones(num_points - N)
+
+    # Handle row boundary conditions (prevent incorrect connections)
+    for i in range(1, N):
+        side_diag[i * N - 1] = 0
+
+    # Generate standard Laplacian matrix
+    M = sp.diags(
+        [main_diag, side_diag, side_diag, up_down_diag, up_down_diag],
+        [0, -1, 1, -N, N], 
+        shape=(num_points, num_points),
+        format="csr"
+    )
+
+    # **Process points outside the circle: set corresponding rows to zero**
+    for i in range(num_points):
+        if not mask_flat[i]:  # If the point is outside the circle
+            M[i, :] = 0  # Set the row to zero
+            M[i, i] = 1  # Ensure numerical stability (nonzero diagonal)
+
+    return M, mask_flat
+
+
+
+if __name__ == "__main__":
+    N = 5  # Example for a 3x3 interior grid (excluding boundary)
+    M_square = generate_M_with_square(N - 2) # Generate M for a 3x3 interior grid
+    print(M_square.toarray())  # Display the full matrix for small N
+
+    M_rectangle = generate_M_with_rectangle(N - 2)
+    print(M_rectangle.toarray())
+
+    M_circle, index_map, valid_points = generate_M_with_circle_v1(N)
+    print(f"Matrix size: {M_circle.shape}") 
+
+    M_circle, mask = generate_M_with_circle_v2(N)
+    print(M_circle.toarray()) 
