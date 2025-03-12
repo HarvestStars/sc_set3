@@ -27,7 +27,7 @@ def compute_eigenfrequency_spectrum(L_values, N, shape, num_eigenvalues=10, meth
         elif shape == 'rectangle':
             M = gen_M.generate_M_with_rectangle(N, h)
         elif shape == 'circle':
-            M = gen_M.generate_M_with_circle_v1(N, h)
+            M, _ = gen_M.generate_M_with_circle_v2(N, h) # v1 is not csr format, so use v2
 
         eigenvalues, eigenmodes = solve_egenv.solve_eigenproblem(M, method=method, num_eigenvalues=num_eigenvalues)
         eigenfrequencies = np.sqrt(-eigenvalues)  # Compute eigenfrequencies
@@ -80,5 +80,5 @@ if __name__ == "__main__":
     N = 20  # Grid size
     shape = 'square'  # shape = 'rectangle' or 'circle'
 
-    spectrum = compute_eigenfrequency_spectrum(L_values, N, shape)
+    spectrum = compute_eigenfrequency_spectrum(L_values, N, "circle", num_eigenvalues=10, method="eigh")
     plot_eigenfrequency_spectrum_by_shape(spectrum, shape)

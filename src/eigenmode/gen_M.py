@@ -89,7 +89,7 @@ def generate_M_with_rectangle(N, h=1.0):
 
 def generate_M_with_circle_v1(N, h=1.0):
     """
-    Generate a sparse matrix M (N x N) corresponding to the discrete Laplacian matrix for a circular computational domain.
+    Generate a sparse matrix M (num_valid x num_valid) corresponding to the discrete Laplacian matrix for a circular computational domain.
     Uses a 5-point finite difference scheme with Dirichlet boundary conditions (boundary values set to 0).
 
     Parameters:
@@ -97,7 +97,7 @@ def generate_M_with_circle_v1(N, h=1.0):
         h (float): Grid spacing
 
     Returns:
-        scipy.sparse.csr_matrix: Sparse matrix M, with shape (N*N, N*N)
+        scipy.sparse.csr_matrix: Sparse matrix M, with shape (num_valid, num_valid)
         index_map (dict): Mapping from 2D coordinates to the corresponding index in the flattened matrix
         valid_points (numpy.array): 2D coordinates of points inside the circle
     """
@@ -183,18 +183,16 @@ def generate_M_with_circle_v2(N, h=1.0):
 
     return M, mask_flat
 
-
-
 if __name__ == "__main__":
     N = 5  # Example for a 3x3 interior grid (excluding boundary)
-    M_square = generate_M_with_square(N - 2) # Generate M for a 3x3 interior grid
-    print(M_square.toarray())  # Display the full matrix for small N
+    M_square = generate_M_with_square(N) # Generate M for a 3x3 interior grid
+    print("suqare", M_square.shape, M_square.toarray())  # Display the full matrix for small N
 
-    M_rectangle = generate_M_with_rectangle(N - 2)
-    print(M_rectangle.toarray())
+    M_rectangle = generate_M_with_rectangle(N)
+    print("rectangle", M_rectangle.shape, M_rectangle.toarray())
 
     M_circle, index_map, valid_points = generate_M_with_circle_v1(N)
-    print(f"Matrix size: {M_circle.shape}") 
+    print("circle v1", M_circle.shape, M_circle.toarray()) 
 
-    M_circle, mask = generate_M_with_circle_v2(N)
-    print(M_circle.toarray()) 
+    M_circle, _ = generate_M_with_circle_v2(N)
+    print("circle v2", M_circle.shape, M_circle.toarray()) 

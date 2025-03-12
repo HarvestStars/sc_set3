@@ -32,6 +32,7 @@ def solve_eigenproblem(M, method="eigs", num_eigenvalues=6):
     
     elif method == "eigs":
         print(f"Using scipy.sparse.linalg.eigs() (for sparse matrices, computing {num_eigenvalues} smallest eigenvalues)")
+        M_dense = M.toarray() if hasattr(M, "toarray") else M
         w, v = spla.eigs(M, k=num_eigenvalues, which='SM')  # 'SM' means computing the smallest eigenvalues
         return w.real, v.real  # Ensure the result is real
 
@@ -152,7 +153,7 @@ def solve_eigenproblem_circle_v2(M, mask, N, num_modes=3):
 
 if __name__ == "__main__":
     # example usage
-    N = 100  # Grid size for the circle
+    N = 50  # Grid size for the circle
     h = 1/N  # Grid spacing
 
     # Square domain
@@ -166,6 +167,9 @@ if __name__ == "__main__":
     # Circular domain
     M_circle, index_map, valid_points = gen_M.generate_M_with_circle_v1(N, h) 
     solve_eigenproblem_circle_v1(M_circle, index_map, N, num_modes=4)
+
+    M_circle_v2, mask= gen_M.generate_M_with_circle_v2(N, h)
+    solve_eigenproblem_circle_v2(M_circle_v2, mask, N, num_modes=4)
 
     # M_circle, mask = gen_M.generate_M_with_circle_v2(N)
     # solve_eigenproblem_circle_v2(M_circle, mask, N, num_modes=3)
