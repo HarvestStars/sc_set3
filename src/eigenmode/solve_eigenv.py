@@ -1,4 +1,4 @@
-import gen_M
+import src.eigenmode.gen_M as gen_M
 import scipy.sparse.linalg as spla
 import scipy.linalg as la
 import matplotlib.pyplot as plt
@@ -60,10 +60,10 @@ def plot_eigenmodes(M, reshape_x, reshape_y, num_modes=3):
     
     for i in range(num_modes):
         eigenvector = v[:, i].reshape(reshape_x, reshape_y)  # Reshape the eigenvector to a 2D grid
-
+        shape = "Rectangle" if reshape_x != reshape_y else "Square"
         ax = axes[i]
         im = ax.imshow(eigenvector, cmap='coolwarm', origin='lower', aspect='auto')
-        ax.set_title(f"Eigenmode {i+1}\nK={w[i]:.4f}") # λ**2 = -K
+        ax.set_title(f"Shape {shape} Eigenmode {i+1}\nK={w[i]:.4f}, eigen_freq λ={np.sqrt(-w[i]):.4}") # λ**2 = -K
         ax.set_xlabel("X-axis")
         ax.set_ylabel("Y-axis")
         fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
@@ -103,7 +103,7 @@ def solve_eigenproblem_circle_v1(M, index_map, N, num_modes=3):
         # plot the eigenvector
         ax = axes[i]
         im = ax.imshow(eigenvector, cmap='coolwarm', origin='lower', aspect='auto')
-        ax.set_title(f"Eigenmode {i+1}\nK={w[i]:.4f}")
+        ax.set_title(f"Shape Circle Eigenmode {i+1}\nK={w[i]:.4f}, eigen_freq λ={np.sqrt(-w[i]):.4}")
         ax.set_xlabel("X-axis")
         ax.set_ylabel("Y-axis")
         fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
@@ -142,7 +142,7 @@ def solve_eigenproblem_circle_v2(M, mask, N, num_modes=3):
 
         ax = axes[i]
         im = ax.imshow(eigenvector, cmap='coolwarm', origin='lower', aspect='auto')
-        ax.set_title(f"Eigenmode {i+1}\nK={w[i]:.4f}")
+        ax.set_title(f"Shape Circle Eigenmode {i+1}\nK={w[i]:.4f}, eigen_freq λ={np.sqrt(-w[i]):.4}")
         ax.set_xlabel("X-axis")
         ax.set_ylabel("Y-axis")
         fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)

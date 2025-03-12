@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import gen_M
-import solve_egenv
+import src.eigenmode.gen_M as gen_M
+import src.eigenmode.solve_eigenv as solve_eigenv
 
 def compute_eigenfrequency_spectrum(L_values, N, shape, num_eigenvalues=10, method="eigh"):
     """
@@ -29,7 +29,7 @@ def compute_eigenfrequency_spectrum(L_values, N, shape, num_eigenvalues=10, meth
         elif shape == 'circle':
             M, _ = gen_M.generate_M_with_circle_v2(N, h) # v1 is not csr format, so use v2
 
-        eigenvalues, eigenmodes = solve_egenv.solve_eigenproblem(M, method=method, num_eigenvalues=num_eigenvalues)
+        eigenvalues, eigenmodes = solve_eigenv.solve_eigenproblem(M, method=method, num_eigenvalues=num_eigenvalues)
         eigenfrequencies = np.sqrt(-eigenvalues)  # Compute eigenfrequencies
         spectrum[L] = eigenfrequencies  # Store results
     

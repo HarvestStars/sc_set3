@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import solve_eigenv as se
-import gen_M
+import src.eigenmode.solve_eigenv as se
+import src.eigenmode.gen_M as gen_M
 
 # Time evolution function, T(t) = A * cos(lambda * t) + B * sin(lambda * t)
 def time_evolution_function(t, A=1, B=0, C=1, lambda_val=1, mode="cosine"):
