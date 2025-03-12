@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import solve_egenv as se
+import solve_eigenv as se
 import gen_M
 
 # Time evolution function, T(t) = A * cos(lambda * t) + B * sin(lambda * t)
