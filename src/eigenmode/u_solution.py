@@ -76,7 +76,7 @@ def animate_U(U, t_values, shape_size=(5,5)):
     return ani
 
 # plot the animation of Gray-Scott model simulation
-def plot_animation(U, t_values, path="../../fig/eigenmode_animation.mp4"):
+def plot_animation(U, t_values, N=50, shape="square", path="../../fig/eigenmode_animation.mp4"):
     # set the path to ffmpeg.exe
     ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
     if not ffmpeg_path:
@@ -92,7 +92,7 @@ def plot_animation(U, t_values, path="../../fig/eigenmode_animation.mp4"):
 
     def animate_mp4(frame):
         im_mp4.set_array(U[:, :, frame])
-        ax_mp4.set_title(f"Time: {t_values[frame]:.2f}")
+        ax_mp4.set_title(f"Solution U of Shape {shape}, with L=1, N={N}, Time:{t_values[frame]:.2f}")
         return im_mp4
     
     ani_mp4 = animation.FuncAnimation(fig_mp4, animate_mp4, frames=100, interval=50)
@@ -106,7 +106,7 @@ def plot_animation(U, t_values, path="../../fig/eigenmode_animation.mp4"):
     plt.close(fig_mp4)  # close the figure to avoid showing it in the notebook
 
 # animation function html
-def animate_U_html(U, t_values, path="../../fig/eigenmode_animation.html"):
+def animate_U_html(U, t_values, N=50, shape="square"):
     """
     use matplotlib.animation to animate the time evolution of U(x, y, t) and save as html file
     """
@@ -116,7 +116,7 @@ def animate_U_html(U, t_values, path="../../fig/eigenmode_animation.html"):
     
     def update(frame):
         cax.set_array(U[:, :, frame])
-        ax.set_title(f"Time: {t_values[frame]:.2f}")
+        ax.set_title(f"Solution U of Shape {shape}, with L=1, N={N}, Time:{t_values[frame]:.2f}")
         return cax
     
     ani = animation.FuncAnimation(fig, update, frames=len(t_values), interval=50, blit=False)

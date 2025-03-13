@@ -4,7 +4,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 src_dir = os.path.abspath(os.path.join(current_dir, "../.."))
 if src_dir not in sys.path:
     sys.path.append(src_dir)
-    
+
 import numpy as np
 import matplotlib.pyplot as plt
 import src.eigenmode.gen_M as gen_M
@@ -43,7 +43,7 @@ def compute_eigenfrequency_spectrum(L_values, N, shape, num_eigenvalues=10, meth
     return spectrum
 
 # Visualizing the spectrum:
-def plot_eigenfrequency_spectrum(spectrum):
+def plot_eigenfrequency_spectrum(spectrum, path=None):
     """
     Plot the eigenfrequency spectrum for different L values.
     
@@ -54,14 +54,17 @@ def plot_eigenfrequency_spectrum(spectrum):
     for L, freqs in spectrum.items():
         plt.plot(range(1, len(freqs) + 1), freqs, marker='o', label=f"L={L}")
     
-    plt.xlabel("Eigenmode Index")
-    plt.ylabel("Eigenfrequency")
-    plt.title("Eigenfrequency Spectrum for Different L Values")
-    plt.legend()
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.xlabel("Eigenmode Index", fontsize=14, fontweight='bold')
+    plt.ylabel("Eigenfrequency", fontsize=14, fontweight='bold')
+    plt.title("Eigenfrequency Spectrum for Different L Values", fontsize=16, fontweight='bold')
+    plt.legend(fontsize=12)
     plt.grid(True)
+    plt.savefig(path)
     plt.show()
 
-def plot_eigenfrequency_spectrum_by_shape(spectrum, shape):
+def plot_eigenfrequency_spectrum_by_shape(spectrum, shape, path="./fig/eigenfrequency_spectrum.png"):
     """
     Plot the eigenfrequency spectrum for different L values for a given shape.
     
@@ -75,10 +78,15 @@ def plot_eigenfrequency_spectrum_by_shape(spectrum, shape):
         L_array = np.full(len(freqs), L)  # Create an array of L values for plotting
         plt.scatter(L_array, freqs, label=f"L={L}", alpha=0.6)  # Scatter plot for each L
 
-    plt.xlabel("Domain Size L")
-    plt.ylabel("Eigenfrequency")
-    plt.title(f"Eigenfrequency Spectrum for {shape.capitalize()} Shape")
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+
+    plt.xlabel("Domain Size L", fontsize=14, fontweight='bold')
+    plt.ylabel("Eigenfrequencies(spectrum)", fontsize=14, fontweight='bold')
+    plt.title(f"Eigenfrequency Spectrum for {shape.capitalize()} Shape", fontsize=16, fontweight='bold')
+    plt.legend(fontsize=12)
     plt.grid(True)
+    plt.savefig(path, dpi=300)
     plt.show()
 
 if __name__ == "__main__":

@@ -71,12 +71,17 @@ def plot_eigenmodes(M, reshape_x, reshape_y, num_modes=3, path="../../fig/eigenm
         ax = axes[i]
         im = ax.imshow(eigenvector, cmap='coolwarm', origin='lower', aspect='auto')
         ax.set_title(f"Shape {shape} Eigenmode {i+1}\nK={w[i]:.4f}, eigen_freq λ={np.sqrt(-w[i]):.4}") # λ**2 = -K
-        ax.set_xlabel("X-axis")
-        ax.set_ylabel("Y-axis")
+        ax.set_xlabel("X-axis", fontsize=16)  # adjust the X-axis label font size
+        ax.set_ylabel("Y-axis", fontsize=16)
+
+        # adjust the font size of the scale
+        ax.tick_params(axis='x', labelsize=14)
+        ax.tick_params(axis='y', labelsize=14)
+
         fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
     
     plt.tight_layout()
-    plt.savefig(path)
+    plt.savefig(path, dpi=300)
     plt.show()
 
 def solve_eigenproblem_circle_v1(M, index_map, N, num_modes=3, path="../../fig/eigenmodes_circle.png"):
@@ -112,12 +117,17 @@ def solve_eigenproblem_circle_v1(M, index_map, N, num_modes=3, path="../../fig/e
         ax = axes[i]
         im = ax.imshow(eigenvector, cmap='coolwarm', origin='lower', aspect='auto')
         ax.set_title(f"Shape Circle Eigenmode {i+1}\nK={w[i]:.4f}, eigen_freq λ={np.sqrt(-w[i]):.4}")
-        ax.set_xlabel("X-axis")
-        ax.set_ylabel("Y-axis")
+        ax.set_xlabel("X-axis", fontsize=14)  # adjust the X-axis label font size
+        ax.set_ylabel("Y-axis", fontsize=14)
+
+        # adjust the font size of the scale
+        ax.tick_params(axis='x', labelsize=12)
+        ax.tick_params(axis='y', labelsize=12)
+
         fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
     
     plt.tight_layout()
-    plt.savefig(path)
+    plt.savefig(path, dpi=300)
     plt.show()
 
 def solve_eigenproblem_circle_v2(M, mask, N, num_modes=3, path="../../fig/eigenmodes_circle_v2.png"):
@@ -152,12 +162,17 @@ def solve_eigenproblem_circle_v2(M, mask, N, num_modes=3, path="../../fig/eigenm
         ax = axes[i]
         im = ax.imshow(eigenvector, cmap='coolwarm', origin='lower', aspect='auto')
         ax.set_title(f"Shape Circle Eigenmode {i+1}\nK={w[i]:.4f}, eigen_freq λ={np.sqrt(-w[i]):.4}")
-        ax.set_xlabel("X-axis")
-        ax.set_ylabel("Y-axis")
+        ax.set_xlabel("X-axis", fontsize=14)  # adjust the X-axis label font size
+        ax.set_ylabel("Y-axis", fontsize=14)
+
+        # adjust the font size of the scale
+        ax.tick_params(axis='x', labelsize=12)
+        ax.tick_params(axis='y', labelsize=12)
+
         fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
     
     plt.tight_layout()
-    plt.savefig(path)
+    plt.savefig(path, dpi=300)
     plt.show()
 
 

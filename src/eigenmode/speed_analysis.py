@@ -47,12 +47,12 @@ def analyze_times(times, confidence=0.95):
         }
     return results
 
-def benchmark_set(N_list, num_repeats=5, num_eigenvalues=6):
+def benchmark_set(N_list, shape="square", num_repeats=5, num_eigenvalues=6):
     methods = ["eigh", "eigs"]
     times = {method: [] for method in methods}
 
     for N in N_list:
-        M = gen_M.generate_M_with_square(N)
+        M = gen_M.generate_M_with_square(N) if shape == "square" else gen_M.generate_M_with_circle_v2(N)
 
         for method in methods:
             time_measurements = []
@@ -92,7 +92,7 @@ def plot_results(results):
     plt.title("Comparison of Eigenvalue Computation Methods")
     plt.show()
 
-def plot_results_set(times, path="../../fig/eigenvalue_computation_time_error_bar.png"):
+def plot_results_set(times, shape="square", path="../../fig/eigenvalue_computation_time_error_bar.png"):
     plt.figure(figsize=(10, 6))
 
     markers = {"eig": "o-", "eigh": "s-", "eigs": "^-"}
@@ -111,13 +111,16 @@ def plot_results_set(times, path="../../fig/eigenvalue_computation_time_error_ba
                 ci_low, ci_high = times[method][i]["confidence_interval"]
                 plt.annotate(f"[{ci_low:.3e}, {ci_high:.3e}]", (N, means[i]), textcoords="offset points", xytext=(0,10), ha='center', fontsize=8, color=colors[method])
 
-    plt.xlabel("Grid Size (N)")
-    plt.ylabel("Time (seconds) Consumed with 95% CI")
-    plt.title("Eigenvalue Computation Time Error Bar for Different N")
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+
+    plt.xlabel("Grid Size (N)", fontsize=14, fontweight='bold')
+    plt.ylabel("Time (seconds) Consumed with 95% CI", fontsize=14, fontweight='bold')
+    plt.title("Shape Square's Eigenvalue Computation Time Error Bar for Different N", fontsize=16, fontweight='bold')
     plt.yscale("log")  # Log scale for y-axis
-    plt.legend()
+    plt.legend(fontsize=12)
     plt.grid(True)
-    plt.savefig(path)
+    plt.savefig(path, dpi=300)
     plt.show()
 
 if __name__ == "__main__":
