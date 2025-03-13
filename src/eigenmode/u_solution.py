@@ -8,6 +8,10 @@ if src_dir not in sys.path:
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from matplotlib.animation import FFMpegWriter
+from IPython.display import HTML
+import matplotlib as mpl
+import imageio_ffmpeg
 import src.eigenmode.solve_eigenv as se
 import src.eigenmode.gen_M as gen_M
 
@@ -63,13 +67,63 @@ def animate_U(U, t_values, shape_size=(5,5)):
     def update(frame):
         cax.set_array(U[:, :, frame])
         ax.set_title(f"Time: {t_values[frame]:.2f}")
-        return cax,
+        return cax
     
     ani = animation.FuncAnimation(fig, update, frames=len(t_values), interval=50, blit=False)
     plt.colorbar(cax)
     plt.show()
     
     return ani
+
+# plot the animation of Gray-Scott model simulation
+def plot_animation(U, t_values, path="../../fig/eigenmode_animation.mp4"):
+    # set the path to ffmpeg.exe
+    ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
+    if not ffmpeg_path:
+        ffmpeg_path = "C:/ffmpeg/bin/ffmpeg.exe"  # manually set the path to ffmpeg.exe, please check the path on your computer!!!
+    mpl.rcParams['animation.ffmpeg_path'] = ffmpeg_path
+    # mpl.rcParams['animation.embed_limit'] = 200
+    print(f"Using FFmpeg at: {ffmpeg_path}")
+
+    ###### MP4 version animation ######
+    fig_mp4, ax_mp4 = plt.subplots()
+    im_mp4 = ax_mp4.imshow(U[:, :, 0], cmap='coolwarm', vmin=-np.max(U), vmax=np.max(U))
+    ax_mp4.set_title("Wave Equation Eigenmode Animation")
+
+    def animate_mp4(frame):
+        im_mp4.set_array(U[:, :, frame])
+        ax_mp4.set_title(f"Time: {t_values[frame]:.2f}")
+        return im_mp4
+    
+    ani_mp4 = animation.FuncAnimation(fig_mp4, animate_mp4, frames=100, interval=50)
+
+    # save the animation as an MP4 file
+    writer = FFMpegWriter(fps=30, metadata=dict(artist='Your Name'), bitrate=1800)
+    os.makedirs("./fig", exist_ok=True)
+    ani_mp4.save(path, writer=writer)
+    print("MP4 saved")
+
+    plt.close(fig_mp4)  # close the figure to avoid showing it in the notebook
+
+# animation function html
+def animate_U_html(U, t_values, path="../../fig/eigenmode_animation.html"):
+    """
+    use matplotlib.animation to animate the time evolution of U(x, y, t) and save as html file
+    """
+    fig, ax = plt.subplots()
+    cax = ax.imshow(U[:, :, 0], cmap='coolwarm', vmin=-np.max(U), vmax=np.max(U))
+    ax.set_title("Wave Equation Eigenmode Animation")
+    
+    def update(frame):
+        cax.set_array(U[:, :, frame])
+        ax.set_title(f"Time: {t_values[frame]:.2f}")
+        return cax
+    
+    ani = animation.FuncAnimation(fig, update, frames=len(t_values), interval=50, blit=False)
+    plt.colorbar(cax)
+    plt.show()
+    
+    return HTML(ani.to_jshtml())  # display the animation in the notebook
 
 if __name__ == "__main__":
     # Generate Laplacian matrix M for a square domain
