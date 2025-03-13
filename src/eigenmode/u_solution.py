@@ -1,3 +1,10 @@
+import sys
+import os
+current_dir = os.path.dirname(os.path.abspath(__file__))
+src_dir = os.path.abspath(os.path.join(current_dir, "../.."))
+if src_dir not in sys.path:
+    sys.path.append(src_dir)
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation

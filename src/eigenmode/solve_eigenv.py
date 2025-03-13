@@ -1,3 +1,10 @@
+import sys
+import os
+current_dir = os.path.dirname(os.path.abspath(__file__))
+src_dir = os.path.abspath(os.path.join(current_dir, "../.."))
+if src_dir not in sys.path:
+    sys.path.append(src_dir)
+
 import src.eigenmode.gen_M as gen_M
 import scipy.sparse.linalg as spla
 import scipy.linalg as la
@@ -39,7 +46,7 @@ def solve_eigenproblem(M, method="eigs", num_eigenvalues=6):
     else:
         raise ValueError("Invalid method. Choose from 'eig', 'eigh', or 'eigs'.")
 
-def plot_eigenmodes(M, reshape_x, reshape_y, num_modes=3):
+def plot_eigenmodes(M, reshape_x, reshape_y, num_modes=3, path="../../fig/eigenmodes.png"):
     """
     Compute and visualize the heatmaps of eigenvectors corresponding to the smallest eigenvalues of Laplacian matrix M.
     
@@ -56,11 +63,11 @@ def plot_eigenmodes(M, reshape_x, reshape_y, num_modes=3):
     w, v = w.real, v.real
     
     # Plot the eigenvectors as heatmaps
+    shape = "Rectangle" if reshape_x != reshape_y else "Square"
     fig, axes = plt.subplots(1, num_modes, figsize=(4 * num_modes, 4))
     
     for i in range(num_modes):
         eigenvector = v[:, i].reshape(reshape_x, reshape_y)  # Reshape the eigenvector to a 2D grid
-        shape = "Rectangle" if reshape_x != reshape_y else "Square"
         ax = axes[i]
         im = ax.imshow(eigenvector, cmap='coolwarm', origin='lower', aspect='auto')
         ax.set_title(f"Shape {shape} Eigenmode {i+1}\nK={w[i]:.4f}, eigen_freq λ={np.sqrt(-w[i]):.4}") # λ**2 = -K
@@ -69,9 +76,10 @@ def plot_eigenmodes(M, reshape_x, reshape_y, num_modes=3):
         fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
     
     plt.tight_layout()
+    plt.savefig(path)
     plt.show()
 
-def solve_eigenproblem_circle_v1(M, index_map, N, num_modes=3):
+def solve_eigenproblem_circle_v1(M, index_map, N, num_modes=3, path="../../fig/eigenmodes_circle.png"):
     """
     Compute and visualize the heatmaps of eigenvectors corresponding to the smallest eigenvalues of Laplacian matrix M.
 
@@ -109,9 +117,10 @@ def solve_eigenproblem_circle_v1(M, index_map, N, num_modes=3):
         fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
     
     plt.tight_layout()
+    plt.savefig(path)
     plt.show()
 
-def solve_eigenproblem_circle_v2(M, mask, N, num_modes=3):
+def solve_eigenproblem_circle_v2(M, mask, N, num_modes=3, path="../../fig/eigenmodes_circle_v2.png"):
     """
     Compute and visualize the heatmaps of eigenvectors corresponding to the smallest eigenvalues of Laplacian matrix M.
     
@@ -148,6 +157,7 @@ def solve_eigenproblem_circle_v2(M, mask, N, num_modes=3):
         fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
     
     plt.tight_layout()
+    plt.savefig(path)
     plt.show()
 
 

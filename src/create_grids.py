@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import numpy as np
 
 def draw_the_position_and_points(grid_size=5,path="../fig/grid.png"):
     # Create figure and axis
