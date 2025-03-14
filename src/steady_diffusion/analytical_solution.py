@@ -108,7 +108,7 @@ def plot_solution(c_solution, N, x, y, path="../../fig/steady_diffusion_circle_b
             fontsize=8, color='white', ha='center', va='center', bbox=dict(facecolor='purple', alpha=0.5))
 
     # plt.scatter(source_x, source_y, color='blue', marker='o', label="Source Point (1)")
-    plt.title(f"Concentration by Matrix M analytical Method\nin Circular disk domain with radius=2, N={N}", fontsize=12, fontweight='bold')
+    plt.title(f"Concentration by Matrix M Analytical Method\nin Circular disk domain with radius=2, N={N}", fontsize=12, fontweight='bold')
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
     plt.xlabel("x", fontsize=14, fontweight='bold')

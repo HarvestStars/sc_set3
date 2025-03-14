@@ -71,7 +71,7 @@ def plot_circle_domain(N=50, R=2.0, tol=1e-6, source_point=(0.6, 1.2), path="../
             fontsize=8, color='white', ha='center', va='center', bbox=dict(facecolor='purple', alpha=0.5))
 
     # plt.scatter(source_x, source_y, color='blue', marker='o', label="Source Point (1)")
-    plt.title(f"Concentration by Iterative Method\nin Circular disk domain with radius=2, N={N}", fontsize=14, fontweight='bold')
+    plt.title(f"Concentration by Jacobi Iterative Method\nin Circular disk domain with radius=2, N={N}", fontsize=14, fontweight='bold')
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
     plt.xlabel("x", fontsize=14, fontweight='bold')
