@@ -77,7 +77,7 @@ def plot_circle_domain(N=50, R=2.0, tol=1e-6, source_point=(0.6, 1.2), path="../
     plt.xlabel("x", fontsize=14, fontweight='bold')
     plt.ylabel("y", fontsize=14, fontweight='bold')
     # plt.legend()
-    plt.savefig(path)
+    plt.savefig(path, dpi=300)
     plt.show()
 
 if __name__ == "__main__":

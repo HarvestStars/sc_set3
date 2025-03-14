@@ -113,7 +113,7 @@ def plot_solution(c_solution, N, x, y, path="../../fig/steady_diffusion_circle_b
     plt.yticks(fontsize=12)
     plt.xlabel("x", fontsize=14, fontweight='bold')
     plt.ylabel("y", fontsize=14, fontweight='bold')
-    plt.savefig(path)
+    plt.savefig(path, dpi=300)
     plt.show()
 
 
