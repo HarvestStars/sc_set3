@@ -29,7 +29,7 @@ def jacobi_iteration(c_old, c_new, source_index_x, source_index_y, mask, N, tol,
         if error < tol:
             break
 
-def plot_circle_domain(N=50, R=2.0, tol=1e-6, source_point=(0.6, 1.2), path="../../fig/steady_diffusion_circle.png"):
+def plot_circle_domain(N=50, R=2.0, tol=1e-6, source_point=(0.6, 1.2), path="../../fig/steady_diffusion_circle_by_jacobi.png"):
     # h = 2 * L / (N - 1)  # grid spacing
     # initialize concentration field
     c = np.zeros((N, N))
@@ -71,7 +71,7 @@ def plot_circle_domain(N=50, R=2.0, tol=1e-6, source_point=(0.6, 1.2), path="../
             fontsize=8, color='white', ha='center', va='center', bbox=dict(facecolor='purple', alpha=0.5))
 
     # plt.scatter(source_x, source_y, color='blue', marker='o', label="Source Point (1)")
-    plt.title("Concentration \nin Circular disk domain with radius=2", fontsize=16, fontweight='bold')
+    plt.title(f"Concentration by Iterative Method\nin Circular disk domain with radius=2, N={N}", fontsize=14, fontweight='bold')
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
     plt.xlabel("x", fontsize=14, fontweight='bold')
