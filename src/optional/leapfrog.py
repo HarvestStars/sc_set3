@@ -90,7 +90,7 @@ def oscillateRK45(N, T, k=1, x0=1, v0 = 0):
 def leapStepForcedOscillator(x_i, v_i_half, dt, t, strength, frequency, k):
     x_i_1 = x_i + v_i_half * dt
     # natural frequency is sqrt(k)
-    v_i_threehalf = v_i_half + (strength*np.sin(frequency*t) + (-k)*x_i_1)*dt # EQ 29
+    v_i_threehalf = v_i_half + (strength*np.cos(frequency*t) + (-k)*x_i_1)*dt # EQ 29
     
     v_i = v_i_half + (-k)*x_i_1*dt*0.5
     
