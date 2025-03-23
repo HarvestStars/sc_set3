@@ -107,9 +107,15 @@ def plot_results_set(times, shape="square", path="../../fig/eigenvalue_computati
 
         # label the confidence intervals
         for i, N in enumerate(N_values):
-            if i % 3 == 0:
+            if i % 4 == 0 and i != 0 and i < 6:
                 ci_low, ci_high = times[method][i]["confidence_interval"]
-                plt.annotate(f"[{ci_low:.3e}, {ci_high:.3e}]", (N, means[i]), textcoords="offset points", xytext=(0,10), ha='center', fontsize=8, color=colors[method])
+                plt.annotate(f"\n[{ci_low:.3e},\n{ci_high:.3e}]", 
+                            (N, means[i]), 
+                            textcoords="offset points", 
+                            xytext=(0, 10), 
+                            ha='center', 
+                            fontsize=10,
+                            color=colors[method])
 
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
